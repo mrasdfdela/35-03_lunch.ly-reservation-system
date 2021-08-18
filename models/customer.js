@@ -26,7 +26,24 @@ class Customer {
        FROM customers
        ORDER BY last_name, first_name`
     );
-    return results.rows.map(c => new Customer(c));
+    return results.rows.map((c) => new Customer(c));
+  }
+
+  /** find customers with matching string */
+
+  static async search(str) {
+    const results = await db.query(
+      `SELECT id, 
+         first_name AS "firstName",  
+         last_name AS "lastName", 
+         phone, 
+         notes
+       FROM customers
+       WHERE first_name LIKE $1 OR last_name LIKE $1
+       ORDER BY last_name, first_name`,
+      [`%${str}%`]
+    );
+    return results.rows.map((c) => new Customer(c));
   }
 
   /** get a customer by ID. */
@@ -79,12 +96,11 @@ class Customer {
     }
   }
 
-  /**  get full name  **/ 
+  /**  get full name  **/
 
-  fullName(){
-   return `${this.firstName} ${this.lastName}`; 
+  fullName() {
+    return `${this.firstName} ${this.lastName}`;
   }
-
 }
 
 module.exports = Customer;
